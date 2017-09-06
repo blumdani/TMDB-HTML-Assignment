@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TheMovieDB Search Page!!</title>
+</head>
+<body style="text-align:center">
+
+<h2 style="color:green"><b>Welcome to Daniel Blumberg's Super Ultra Awesome Movie Search Page!</b></h2>
+<h5><i>HOW TO: Enter a word or phrase, and click "Find Those Movies!" or press "enter" when you are ready to search! This will pull up all movies in the database related to your search, along<br>
+		with their corresponding IDs. If you would like to know more about a specific movie, enter the movie's corresponding ID number in the second text field. Repeat either process to your heart's content.</i></h5>
+<h6><i>(Note that when returning movies, if more than 20 results are returned, the API will return the top 20 results. If needed, make your search more specific to narrow results.)</i></h6>
+<p>
+<i style="color:blue">Enter Search Here:</i>    
+<input id="searchText" type="text" onkeypress="searchKeyPress(event)">
+<input id="searchButton" type="submit" onclick="myFunction()" value="Find Those Movies!"><br>
+</p>
+<p>
+<i id="searchLabel" style="color: red">Enter ID here for more information about a particular film (or run new search above):</i>
+<input id="searchID" type="text" onkeypress="searchIDPress(event)">
+<input id="IDButton" type="submit" onclick="myIDFunction()" value="More Info">
+</p>
+
+<p id="outputText" style="text-align:center"></p><br>
+<textarea hidden="true" id="outputResults" ></textarea>
+
+<script>
+function searchKeyPress(e)
+{
+	e = e || window.event;
+	if(e.keyCode == 13)
+	{
+		document.getElementById("searchButton").click();
+	}
+}
+function searchIDPress(e)
+{
+	e = e || window.event;
+	if(e.keyCode == 13)
+	{
+		document.getElementById("IDButton").click();
+	}
+}
+function myIDFunction()
+{
+	var testElement = document.getElementById("searchID");
+	var testElementToString = document.getElementById("searchID").value;
+	if(testElementToString == "")
+	{
+		var tempString = "Nothing was entered, please enter an ID or search for more movie titles!"
+		document.getElementById("outputResults").hidden = true;
+		document.getElementById("outputResults").innerHTML = "";
+		document.getElementById("outputText").innerHTML = tempString;
+		document.getElementById("outputText").style.color = red;
+	}
+	else
+	{
+		myIDURL = "https://api.themoviedb.org/3/movie/" + testElementToString + "?api_key=7289180fdf05c3fdc8266dfdb6b05bca"
+		document.getElementById("outputText").innerHTML = "Looking for more info with API call: " + myIDURL;
+		loadIDDoc();
+	}
+}
+function loadIDDoc()
+{
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() 
+	{
+		document.getElementById("outputResults").hidden = false;
+		document.getElementById("outputResults").cols = 120;
+		if (this.readyState == 4 && this.status == 200) 
+		{
+			var resultsToString = this.responseText;
+			var resultsArray = resultsToString.split(',');
+			resultsArray[0] = resultsArray[0].replace(/"|[|{|]|}/g, "");
+			count = 1;
+			document.getElementById("outputResults").rows = 22;
+			document.getElementById("outputResults").innerHTML = resultsArray[0];
+			
+			while(resultsArray[count])
+			{
+				resultsArray[count] = resultsArray[count].replace(/"|[|{|]|}/g, "");
+				document.getElementById("outputResults").innerHTML += "\n" + resultsArray[count];
+				count++;
+			}				
+		}
+		else
+		{
+			document.getElementById("outputResults").rows = 2;
+			document.getElementById("outputResults").innerHTML = "That ID number does not appear to correspond to a movie. Please double check your ID or try a new movie search!"
+		}
+	};
+	xhttp.open("GET", myIDURL, true);
+	xhttp.send();
+}
+function myFunction() 
+{
+	var testElement = document.getElementById("searchText");
+	var testElementToString = document.getElementById("searchText").value;
+	if(testElementToString == "")
+	{
+		document.getElementById("outputResults").hidden = true;
+		document.getElementById("outputText").innerHTML = "Nothing was entered, please enter a search term!"
+	}
+	else
+	{
+		var queryArray = testElementToString.split(" "/"  ");
+		var outputQuery = queryArray[0];
+		var count = 1;
+		while(queryArray[count])
+		{
+			outputQuery += "+" + queryArray[count];
+			count++;
+		}
+		
+		document.getElementById("outputText").innerHTML = "Querying the API with the following call: https://api.themoviedb.org/3/search/movie?api_key=7289180fdf05c3fdc8266dfdb6b05bca&query=" + outputQuery;
+		myURL = "https://api.themoviedb.org/3/search/movie?api_key=7289180fdf05c3fdc8266dfdb6b05bca&query=" + outputQuery;
+		loadDoc();
+	}
+}	
+	function loadDoc() 
+	{
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() 
+		{
+			document.getElementById("outputResults").hidden = false;
+			document.getElementById("outputResults").cols = 80;
+			if (this.readyState == 4 && this.status == 200) 
+			{
+				var resultsToString = this.responseText;
+				var resultsArray = resultsToString.split(',');
+				if(resultsArray[1].slice(16) != 0)
+				{
+					document.getElementById("outputResults").hidden = false;
+					document.getElementById("outputResults").innerHTML = resultsArray[1].slice(16) + " Search Results Found:";
+					var count=1
+					var title=0
+					var maxlength=0;
+					while(resultsArray[count])
+					{
+						if(resultsArray[count].includes('"title":'))
+						{
+							var myID = resultsArray[count-3].slice(5);
+							var myTitle = resultsArray[count].slice(9);
+							currentLength = myTitle.length + myID.length + 2;
+							if(maxlength < currentLength)
+							{
+								maxlength = currentLength;
+							}
+							document.getElementById("outputResults").innerHTML += "\n" + myTitle.slice(0, -1) + ", ID: " + myID;
+							title++;
+						}
+						count++;
+					}
+					document.getElementById("outputResults").cols = maxlength + 3;
+					if(title<=20)
+					{
+						document.getElementById("outputResults").rows = title + 1;
+					}
+					else
+					{
+						document.getElementById("outputResults").rows = 23;
+					}
+				}
+			}
+			else
+			{
+				document.getElementById("outputResults").rows = 2;
+				document.getElementById("outputResults").innerHTML = "Nothing found with that search term, perhaps it's a movie idea in the making?";
+			}
+		};
+		xhttp.open("GET", myURL, true);
+		xhttp.send(); 
+	}
+
+</script>
+
+</body>
+</html>
