@@ -82,7 +82,22 @@ function loadIDDoc()
 			
 			while(resultsArray[count])
 			{
+				if(resultsArray[count].includes('"overview":') == true)
+				{
+					resultsArray[count] = resultsArray[count].replace(/"|[|{|]|}/g, "");
+					resultsArray[count] = resultsArray[count].trim();
+					document.getElementById("outputResults").innerHTML += "\n" + resultsArray[count];
+					count++;
+					while(resultsArray[count].includes('"popularity":') == false)
+					{
+						resultsArray[count] = resultsArray[count].replace(/"|[|{|]|}/g, "");
+						resultsArray[count] = resultsArray[count].trim();
+						document.getElementById("outputResults").innerHTML += ", " + resultsArray[count];
+						count++;
+					}
+				}
 				resultsArray[count] = resultsArray[count].replace(/"|[|{|]|}/g, "");
+				resultsArray[count] = resultsArray[count].trim();
 				document.getElementById("outputResults").innerHTML += "\n" + resultsArray[count];
 				count++;
 			}				
