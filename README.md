@@ -2,6 +2,8 @@
 
 Included in this repository is the TMDB_API.html file, which will open in a native browser. Click "Clone or Download" on the repository main page, and "Download Zip" onto your local machine. Access and click the HTML file to run it in your default browser.
 
+!!!(PLEASE NOTE: This has been tested in Google Chrome Version 60.0.3112.113, Mozilla Firefox Version 55.0.3, and Microsoft Edge Version 38.14393.1066.0. Results may vary with different browsers, particularly older browsers that may not support tag functionality that more recent browsers do.)!!!
+
 Overview:
 HTML5 (with Javascript, Ajax, and a little CSS for good measure) seemed to lend itself well to this project. Javascript deals well with API calls, and HTML5 provides a good, intuitive structure for the webpage front-end design. Python and Django were also considered, but ultimately not utilized. It would be an interesting experience to go back and attempt to recreate the work using Python and Django.
 
