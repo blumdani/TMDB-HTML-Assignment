@@ -16,19 +16,25 @@ body
 <h6><i>(Note that when returning movies, if more than 20 results are returned, the API will return the top 20 results. If needed, make your search more specific to narrow results.)</i></h6>
 <p>
 <i style="color:blue">Enter Search Here:</i>    
-<input id="searchText" type="text" onkeypress="searchKeyPress(event)">
+<input id="searchText" type="text" value="" onkeypress="searchKeyPress(event)">
 <input id="searchButton" type="submit" onclick="myFunction()" value="Find Those Movies!"><br>
 </p>
 <p>
-<i id="searchLabel" style="color: red">Enter ID here for more information about a particular film (or run new search above):</i>
-<input id="searchID" type="text" onkeypress="searchIDPress(event)">
+<i id="searchLabel" style="color:blue">Enter ID here for more information about a particular film (or run new search above):</i>
+<input id="searchID" type="text" value="" onkeypress="searchIDPress(event)">
 <input id="IDButton" type="submit" onclick="myIDFunction()" value="More Info">
 </p>
 
-<p id="outputText" style="text-align:center"></p><br>
+<p id="outputText" style="text-align:center; color:red" tex></p><br>
 <textarea hidden="true" id="outputResults" ></textarea>
 
+
 <script>
+window.onload = function() 
+{
+  document.getElementById('searchText').value = '';
+  document.getElementById('searchID').value = '';
+ }
 function searchKeyPress(e)
 {
 	e = e || window.event;
@@ -60,7 +66,7 @@ function myIDFunction()
 	else
 	{
 		myIDURL = "https://api.themoviedb.org/3/movie/" + testElementToString + "?api_key=7289180fdf05c3fdc8266dfdb6b05bca"
-		document.getElementById("outputText").innerHTML = "Looking for more info with API call: " + myIDURL;
+		document.getElementById("outputText").innerHTML = "-Looking for more info with API call: '" + myIDURL + "', this may take a moment.-";
 		loadIDDoc();
 	}
 }
@@ -131,18 +137,18 @@ function myFunction()
 			count++;
 		}
 		
-		document.getElementById("outputText").innerHTML = "Querying the API with the following call: https://api.themoviedb.org/3/search/movie?api_key=7289180fdf05c3fdc8266dfdb6b05bca&query=" + outputQuery;
+		document.getElementById("outputText").innerHTML = "-Querying the API with the following call: 'https://api.themoviedb.org/3/search/movie?api_key=7289180fdf05c3fdc8266dfdb6b05bca&query=" + outputQuery + "', this may take a moment.-";
 		myURL = "https://api.themoviedb.org/3/search/movie?api_key=7289180fdf05c3fdc8266dfdb6b05bca&query=" + outputQuery;
 		loadDoc();
 	}
 }	
 	function loadDoc() 
 	{
+		document.getElementById("outputResults").hidden = false;
+		document.getElementById("outputResults").cols = 80;
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() 
 		{
-			document.getElementById("outputResults").hidden = false;
-			document.getElementById("outputResults").cols = 80;
 			if (this.readyState == 4 && this.status == 200) 
 			{
 				var resultsToString = this.responseText;
